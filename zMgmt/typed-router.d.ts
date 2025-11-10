@@ -51,6 +51,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/questionedit': RouteRecordInfo<
+      '/questionedit',
+      '/questionedit',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
   }
 
   /**
@@ -85,6 +92,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/nav/4.vue': {
       routes:
         | '/nav/4'
+      views:
+        | never
+    }
+    'src/pages/questionedit.vue': {
+      routes:
+        | '/questionedit'
       views:
         | never
     }

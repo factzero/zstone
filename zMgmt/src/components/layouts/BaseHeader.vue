@@ -31,7 +31,7 @@ function onChange(val: boolean) {
     document.documentElement.animate(
       { clipPath: val ? clipPath.reverse() : clipPath },
       {
-        duration: 600,
+        duration: 400,
         pseudoElement: val
           ? "::view-transition-old(root)"
           : "::view-transition-new(root)",
