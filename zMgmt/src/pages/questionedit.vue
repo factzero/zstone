@@ -29,6 +29,49 @@
               </el-select>
             </el-form-item>
 
+            <el-form-item label="题目出处">
+              <el-input
+                v-model="questionForm.source"
+                placeholder="请输入题目出处（如：2025年11月第8题）"
+              />
+            </el-form-item>
+
+            <!-- Question Domain -->
+            <el-form-item label="题目领域">
+              <div class="flex gap-2">
+                <el-select
+                  v-model="selectedDomainCategory"
+                  placeholder="领域类别"
+                  clearable
+                  @change="handleCategoryChange"
+                  class="flex-1"
+                >
+                  <el-option
+                    v-for="category in domainCategories"
+                    :key="category.value"
+                    :label="category.label"
+                    :value="category.value"
+                  />
+                </el-select>
+
+                <el-select
+                  v-model="questionForm.subdomain"
+                  placeholder="具体领域"
+                  clearable
+                  filterable
+                  :disabled="!selectedDomainCategory"
+                  class="flex-1"
+                >
+                  <el-option
+                    v-for="subDomain in filteredSubDomains"
+                    :key="subDomain.label"
+                    :label="subDomain.label"
+                    :value="subDomain.label"
+                  />
+                </el-select>
+              </div>
+            </el-form-item>
+
             <!-- 题目内容输入框 -->
             <el-form-item label="题目内容">
               <el-input
@@ -179,6 +222,18 @@
         </template>
 
         <div class="preview-container overflow-auto flex-grow">
+          <p v-if="questionForm.source">
+            <strong>出处：</strong>{{ questionForm.source }}
+          </p>
+          <p v-if="questionForm.domain">
+            <strong>领域：</strong>
+            <span
+              >{{ questionForm.domain
+              }}{{
+                questionForm.subdomain ? " - " + questionForm.subdomain : ""
+              }}</span
+            >
+          </p>
           <!-- Single Choice Preview -->
           <div v-if="questionForm.type === 'single'" class="preview-question">
             <div class="question-content mb-4">
@@ -309,10 +364,90 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive } from "vue";
+import { reactive, ref, computed, watch } from "vue";
 import { ElMessage } from "element-plus";
 import { Delete } from "@element-plus/icons-vue";
 import MarkdownIt from "markdown-it";
+
+const domainData = [
+  {
+    value: "exampaper",
+    label: "试卷",
+    children: [
+      { label: "软件工程" },
+      { label: "系统分析与设计" },
+      { label: "架构设计" },
+      { label: "操作系统" },
+    ],
+  },
+  {
+    value: "tutorial",
+    label: "教程",
+    children: [
+      { label: "语文" },
+      { label: "英语" },
+      { label: "历史" },
+      { label: "地理" },
+      { label: "政治" },
+    ],
+  },
+];
+
+// Reactive variables
+const selectedDomainCategory = ref("");
+const filteredSubDomains = ref<{ label: string }[]>([]);
+
+// Computed property for domain categories
+const domainCategories = computed(() => {
+  return domainData.map((category) => ({
+    value: category.value,
+    label: category.label,
+  }));
+});
+
+// Watch for changes to category selection
+watch(selectedDomainCategory, (newVal) => {
+  // Reset subdomain when category changes
+  questionForm.subdomain = "";
+
+  if (!newVal) {
+    questionForm.domain = "";
+    filteredSubDomains.value = [];
+    return;
+  }
+
+  // Find the selected category and update sub-domains
+  const category = domainData.find((cat) => cat.value === newVal);
+  if (category) {
+    questionForm.domain = category.label; // Set the domain label
+    filteredSubDomains.value = category.children;
+  } else {
+    questionForm.domain = "";
+    filteredSubDomains.value = [];
+  }
+});
+
+// Handle category change (kept for backward compatibility)
+const handleCategoryChange = (categoryValue: string) => {
+  // Reset subdomain when category changes
+  questionForm.subdomain = "";
+
+  if (!categoryValue) {
+    questionForm.domain = "";
+    filteredSubDomains.value = [];
+    return;
+  }
+
+  // Find the selected category and update sub-domains
+  const category = domainData.find((cat) => cat.value === categoryValue);
+  if (category) {
+    questionForm.domain = category.label; // Set the domain label
+    filteredSubDomains.value = category.children;
+  } else {
+    questionForm.domain = "";
+    filteredSubDomains.value = [];
+  }
+};
 
 // Initialize MarkdownIt
 const md = new MarkdownIt({
@@ -334,14 +469,17 @@ const renderMarkdown = (content: string) => {
 const questionForm = reactive({
   type: "single",
   content: "",
+  source: "",
+  domain: "",
+  subdomain: "",
   options: [] as { content: string; isCorrect: boolean }[],
-  correctAnswer: 0, // for single choice
+  correctAnswer: 0,
   subQuestions: [] as {
     content: string;
     options: { content: string }[];
     correctAnswer: number;
-  }[], // for composite questions
-  answer: "", // for short answer
+  }[],
+  answer: "",
   explanation: "",
 });
 
