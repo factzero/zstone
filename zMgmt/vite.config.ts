@@ -12,17 +12,17 @@ import path from 'path'
 export default defineConfig({
   plugins: [
     VueRouter({
-      routesFolder: ['src/pages'],// 默认扫描的目录
-      dts: 'typed-router.d.ts',// 自动生成类型声明文件
+      routesFolder: ['src/pages'],
+      dts: 'typed-router.d.ts',
     }),
-    vue(), 
-    tailwindcss(),
+    vue(),
     AutoImport({
       resolvers: [ElementPlusResolver()],
     }),
     Components({
       resolvers: [ElementPlusResolver()],
     }),
+    tailwindcss(),
   ],
 
   resolve: {
