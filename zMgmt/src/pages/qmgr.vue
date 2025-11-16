@@ -605,7 +605,7 @@ const openPreviewDialog = (question: QuestionData) => {
 };
 
 // 重置当前题目
-const resetCurrentQuestion = () => {
+const resetCurrentQuestion = (): void => {
   Object.assign(currentQuestion, {
     type: "comprehensive",
     stem: "",

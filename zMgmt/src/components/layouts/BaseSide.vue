@@ -1,13 +1,13 @@
 <script lang="ts" setup>
-import { useRouter } from 'vue-router'
-import { Document } from '@element-plus/icons-vue'
+import { useRouter } from "vue-router";
+import { Document } from "@element-plus/icons-vue";
 
-const router = useRouter()
+const router = useRouter();
 
 // 菜单点击处理
 const handleMenuClick = (path: string) => {
-  router.push(path)
-}
+  router.push(path);
+};
 </script>
 
 <template>
@@ -15,7 +15,7 @@ const handleMenuClick = (path: string) => {
     <div class="flex items-center justify-center h-16 border-b border-gray-700">
       <h1 class="text-xl font-bold">考试系统</h1>
     </div>
-    
+
     <el-menu
       class="border-none bg-gray-800 text-white"
       :default-active="$route.path"
